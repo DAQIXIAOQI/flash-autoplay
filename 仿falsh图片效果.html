@@ -1,0 +1,281 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<head>
+    <style>
+        body,
+        div {
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        #container {
+            width: 200px;
+            height: 255px;
+            margin: 50px auto;
+            border: 5px solid black;
+            border-radius: 7px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #main {
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+            position: absolute;
+        }
+        
+        #main .img {
+            overflow: hidden;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+        
+        #main #left {
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            z-index: 1199;
+        }
+        
+        #main #right {
+            position: absolute;
+            left: 100px;
+            width: 100px;
+            height: 200px;
+            z-index: 1199;
+        }
+        
+        button {
+            z-index: 1200;
+            position: absolute;
+            background: lightgray;
+            border-radius: 8px;
+            border: none;
+            width: 40px;
+            height: 40px;
+            font-size: 200%;
+            top: 80px;
+            color: white;
+            filter: alpha(opacity: 0);
+            opacity: 0;
+        }
+        
+        button#rightbtn {
+            right: 10px;
+        }
+        
+        button#leftbtn {
+            left: 10px;
+        }
+        
+        #bottom {
+            border-top: 5px solid black;
+            position: absolute;
+            left: 0px;
+            top: 200px;
+            width: 450px;
+            height: 50px;
+            background: black;
+        }
+        
+        #bottom .simg {
+            float: left;
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            filter: alpha(opacity: 30);
+            opacity: 0.3;
+        }
+
+    </style>
+
+    <script>
+        window.onload = function() {
+
+            var ocontainer = document.getElementById("container");
+            var omain = document.getElementById("main");
+            var omainimg = getClassName("img",omain);
+            var oleft = document.getElementById("left");
+            var oright = document.getElementById("right");
+            var oleftbtn = document.getElementById("leftbtn");
+            var orightbtn = document.getElementById("rightbtn");
+            var osimg = getClassName("simg",document);
+            var obottom = document.getElementById("bottom");
+            var timer;
+            var zindex = 1;
+            var num = 0;
+
+
+            move(osimg[num], {
+                opacity: 100
+            });
+
+            //开始滚动
+            timer = setInterval(function() {
+                num++;
+                action();
+                if (num == omainimg.length - 1) {
+                    num = -1;
+                }
+            }, 2000);
+
+            function action() {
+                omainimg[num].style.zIndex = zindex++;
+                omainimg[num].style.height = 0;
+                move(omainimg[num], {
+                    height: 200
+                });
+
+                for (var i = 0; i < osimg.length; i++) {
+                    move(osimg[i], {
+                        opacity: 30
+                    });
+                }
+
+                move(osimg[num], {
+                    opacity: 100
+                });
+
+                //底层滚动设定
+                if (num >= 3 && num <= 7) {
+                    move(obottom, {
+                        left: -(num - 2) * osimg[0].offsetWidth
+                    })
+                }
+                if (num == (osimg.length - 1)) {
+                    move(obottom, {
+                        left: -250
+                    })
+
+                }
+                if (num == 0) {
+                    move(obottom, {
+                        left: 0
+                    })
+                }
+
+            }
+
+            //移入停止滚动，移出开滚动
+            ocontainer.onmouseover = function() {
+                clearInterval(timer);
+            }
+            ocontainer.onmouseout = function() {
+                    timer = setInterval(function() {
+                        num++;
+                        action();
+                        if (num == omainimg.length - 1) {
+                            num = -1;
+                        }
+                    }, 2000);
+                }
+                //按钮出现规则
+            oleft.onmouseover = oleftbtn.onmouseover = function() {
+                move(oleftbtn, {
+                    opacity: 80
+                });
+            }
+            oleft.onmouseout = function() {
+                move(oleftbtn, {
+                    opacity: 0
+                });
+            }
+            oright.onmouseover = orightbtn.onmouseover = function() {
+                move(orightbtn, {
+                    opacity: 80
+                });
+            }
+            oright.onmouseout = function() {
+                    move(orightbtn, {
+                        opacity: 0
+                    });
+                }
+                //按钮点击事件
+            oleftbtn.onclick = function() {
+                num--;
+                if (num == -1) {
+                    num = omainimg.length - 1;
+
+                }
+                action();
+            }
+            orightbtn.onclick = function() {
+                num++;
+                if (num == omainimg.length) {
+                    num = 0;
+                }
+                action();
+            }
+
+            for (var i = 0; i < osimg.length; i++) {
+                osimg[i].index = i;
+                //小图片移入移出效果
+                osimg[i].onmouseover = function() {
+                    move(this, {
+                        opacity: 100
+                    });
+                }
+                osimg[i].onmouseout = function() {
+                        if (this.index == num) {
+
+                        } else {
+                            move(this, {
+                                opacity: 30
+                            });
+                        }
+                    }
+                    //点击小图片切换大图片效果
+                osimg[i].onclick = function() {
+                    num = this.index;
+                    action();
+                }
+            }
+
+        }
+
+    </script>
+    <script src="mylibrary.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+    <div id="container">
+        <div id="main">
+            <div class="img" style="z-index:1"><img src="image/x/b2.jpg" /></div>
+            <div class="img"><img src="image/x/b1.jpg" /></div>
+            <div class="img"><img src="image/x/b3.jpg" /></div>
+            <div class="img"><img src="image/x/b4.jpg" /></div>
+            <div class="img"><img src="image/x/b5.jpg" /></div>
+            <div class="img"><img src="image/x/b6.jpg" /></div>
+            <div class="img"><img src="image/x/b7.jpg" /></div>
+            <div class="img"><img src="image/x/b8.jpg" /></div>
+            <div class="img"><img src="image/x/b9.jpg" /></div>
+
+            <div id="left">
+            </div>
+            <div id="right">
+            </div>
+            <button id="rightbtn">></button>
+            <button id="leftbtn">
+                <</button>
+        </div>
+        <div id="bottom">
+            <div class="simg"><img src="image/x/s2.png" /></div>
+            <div class="simg"><img src="image/x/s1.png" /></div>
+            <div class="simg"><img src="image/x/s3.png" /></div>
+            <div class="simg"><img src="image/x/s4.png" /></div>
+            <div class="simg"><img src="image/x/s5.png" /></div>
+            <div class="simg"><img src="image/x/s6.png" /></div>
+            <div class="simg"><img src="image/x/s7.png" /></div>
+            <div class="simg"><img src="image/x/s8.png" /></div>
+            <div class="simg"><img src="image/x/s9.png" /></div>
+        </div>
+    </div>
+<p>已兼容IE，独圆角效果无法兼容IE6-8<br/>
+hover大图会出现按钮哦</p>
+</body>
+
+</html>
